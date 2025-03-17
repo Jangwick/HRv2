@@ -21,3 +21,4 @@ openpyxl
 XlsxWriter
 supabase
 google-genai
+gunicorn>=20.1.0
