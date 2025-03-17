@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<!--
+  NOTE: This template is used for PDF generation. 
+  We can't use Bootstrap classes here because PDF generation libraries (like ReportLab)
+  don't interpret Bootstrap classes - they require explicit CSS styling.
+  
+  When creating PDF templates, use direct CSS properties instead of Bootstrap classes.
+-->
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ report_title }}</title>
+    <style>
+        @page {
+            margin: 1cm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            font-size: 12px;
+        }
+        .header {
+            background-color: #4e73df;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 10px;
+            margin-top: 20px;
+            color: #666;
+        }
+        h1 {
+            margin: 0;
+            padding: 0;
+            font-size: 24px;
+        }
+        h2 {
+            font-size: 18px;
+            color: #4e73df;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .summary-section {
+            background-color: #f2f2f2;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 10px;
+        }
+        .summary-item {
+            text-align: center;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .summary-value {
+            font-weight: bold;
+            font-size: 18px;
+            color: #4e73df;
+        }
+        .group-header {
+            background-color: #e9ecef;
+            padding: 10px;
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{ report_title }}</h1>
+        <p>Generated on {{ now.strftime('%B %d, %Y at %H:%M:%S') }}</p>
+        <p>{{ company_name }}</p>
+    </div>
+    
+    <div class="summary-section">
+        <h2>Report Summary</h2>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <div class="summary-value">{{ summary.total_employees }}</div>
+                <div>Total Employees</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value">{{ "%.2f"|format(summary.avg_monthly) }} USD</div>
+                <div>Average Monthly</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value">{{ "%.2f"|format(summary.avg_annual) }} USD</div>
+                <div>Average Annual</div>
+            </div>
+        </div>
+    </div>
+    
+    <h2>Detailed Salary Data</h2>
+    
+    {% for group_name, group_items in grouped_data.items() %}
+        {% if grouped_data|length > 1 %}
+            <div class="group-header">{{ group_name }} ({{ group_items|length }} employees)</div>
+        {% endif %}
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Employee</th>
+                    <th>Department</th>
+                    <th>Position</th>
+                    <th>Salary Type</th>
+                    <th>Current Salary</th>
+                    <th>Monthly Equivalent</th>
+                    <th>Annual Equivalent</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in group_items %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.department }}</td>
+                    <td>{{ item.position }}</td>
+                    <td>{{ item.salary_type }}</td>
+                    <td>{{ item.amount }}</td>
+                    <td>{{ "%.2f"|format(item.monthly_equivalent) }} {{ item.currency }}</td>
+                    <td>{{ "%.2f"|format(item.annual_equivalent) }} {{ item.currency }}</td>
+                </tr>
+                {% endfor %}
+                <!-- Group Summary Row -->
+                <tr style="font-weight: bold; background-color: #e9ecef;">
+                    <td colspan="5">Group Summary</td>
+                    <td>{{ "%.2f"|format(group_items|sum(attribute='monthly_equivalent')) }} USD</td>
+                    <td>{{ "%.2f"|format(group_items|sum(attribute='annual_equivalent')) }} USD</td>
+                </tr>
+            </tbody>
+        </table>
+    {% endfor %}
+    
+    <div class="footer">
+        <p>Confidential: This document contains sensitive compensation information and should be handled securely.</p>
+        <p>Page 1 of 1</p>
+    </div>
+</body>
+</html>

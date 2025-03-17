@@ -1,0 +1,120 @@
+/**
+ * Theme Toggle Styles
+ * Styling for theme toggle buttons and transition effects
+ */
+
+/* Theme transition effect for smoother theme switching */
+html {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Bootstrap elements that need transition */
+.card, .navbar, .btn, .form-control, .form-select, .modal,
+.table, .input-group-text, .dropdown-menu, .alert, .badge {
+  transition: all 0.3s ease;
+}
+
+/* Dark mode custom variables and overrides */
+.dark-mode {
+  --hr-bg-gradient: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+  --hr-card-bg: #2d3748;
+  --hr-border-color: #4a5568;
+}
+
+/* Theme toggle button styles */
+.theme-toggle-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 1rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 2rem;
+  background-color: var(--bs-tertiary-bg);
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--bs-body-color);
+  opacity: 0.6;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+  padding: 0;
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 2px;
+}
+
+.theme-toggle:hover {
+  opacity: 0.9;
+  background-color: rgba(var(--bs-primary-rgb), 0.15);
+  transform: scale(1.1);
+}
+
+.theme-toggle.active {
+  opacity: 1;
+  color: var(--bs-primary);
+  background-color: rgba(var(--bs-primary-rgb), 0.2);
+}
+
+.theme-toggle i {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle:hover i {
+  transform: rotate(15deg);
+}
+
+/* Tooltip text */
+.theme-toggle-label {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--bs-dark);
+  color: var(--bs-white);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  z-index: 1070;
+}
+
+.theme-toggle:hover .theme-toggle-label {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .theme-toggle {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+  
+  .theme-toggle i {
+    font-size: 1rem;
+  }
+  
+  /* Hide tooltips on mobile */
+  .theme-toggle:hover .theme-toggle-label {
+    display: none;
+  }
+}

@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}Employee Directory{% endblock %}
+
+{% block extra_css %}
+<style>
+    .employee-card {
+        transition: all 0.3s ease;
+    }
+    .employee-card:hover {
+        transform: translateY(-5px);
+    }
+    .employee-img {
+        width: 64px;
+        height: 64px;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+    .search-header {
+        background-color: var(--bs-tertiary-bg);
+        border-radius: 10px;
+        padding: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-users me-2"></i>Employee Directory</h2>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+    </a>
+</div>
+
+<!-- Search and Filter -->
+<div class="search-header mb-4">
+    <form method="GET" action="{{ url_for('employee_list') }}">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    {{ form.search(class="form-control", placeholder="Search by name or email") }}
+                </div>
+            </div>
+            <div class="col-md-4">
+                {{ form.department(class="form-select") }}
+            </div>
+            <div class="col-md-2">
+                {{ form.submit(class="btn btn-primary w-100") }}
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Export Controls -->
+<div class="d-flex justify-content-end mb-4">
+    <div class="dropdown">
+        <button class="btn btn-outline-primary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-download me-2"></i>Export
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+            <li>
+                <a class="dropdown-item" href="{{ url_for('export_employees', format='csv', search=request.args.get('search', ''), department=request.args.get('department', '')) }}">
+                    <i class="fas fa-file-csv me-2"></i>Export to CSV
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item" href="{{ url_for('export_employees', format='pdf', search=request.args.get('search', ''), department=request.args.get('department', '')) }}">
+                    <i class="fas fa-file-pdf me-2"></i>Export to PDF
+                </a>
+            </li>
+            <li>
+                <div class="dropdown-divider"></div>
+            </li>
+            <li>
+                <div class="dropdown-item-text small text-muted px-2">
+                    <i class="fas fa-info-circle me-1"></i> PDF exports use ReportLab
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Employee List -->
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    {% for employee in employees %}
+    <div class="col">
+        <div class="card employee-card h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="me-3">
+                        {% if employee.profile and employee.profile.has_profile_image() %}
+                            <img src="{{ get_profile_image_url(employee.profile.profile_image, 64, 64, employee.profile.cloudinary_version) }}" alt="Profile" class="employee-img">
+                        {% else %}
+                            <div class="employee-img bg-secondary d-flex align-items-center justify-content-center">
+                                <i class="fas fa-user text-white"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h5 class="card-title mb-0">
+                            {% if employee.profile and employee.profile.first_name and employee.profile.last_name %}
+                                {{ employee.profile.first_name }} {{ employee.profile.last_name }}
+                            {% else %}
+                                {{ employee.username }}
+                            {% endif %}
+                        </h5>
+                        <p class="card-text text-muted">
+                            {% if employee.profile and employee.profile.position %}
+                                {{ employee.profile.position }}
+                            {% else %}
+                                {{ employee.department.replace('_', ' ').replace('it', 'IT').title() }}
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <p><i class="fas fa-envelope me-2 text-muted"></i> {{ employee.email }}</p>
+                    {% if employee.profile and employee.profile.phone_number %}
+                        <p><i class="fas fa-phone me-2 text-muted"></i> {{ employee.profile.phone_number }}</p>
+                    {% endif %}
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge {% if employee.role == 'admin' %}bg-danger{% elif employee.role == 'hr' %}bg-info{% else %}bg-secondary{% endif %}">
+                        {{ employee.role.replace('admin', 'Admin').replace('hr', 'HR') }}
+                    </span>
+                    <a href="{{ url_for('employee_detail', employee_id=employee.id) }}" class="btn btn-sm btn-outline-primary">
+                        View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center py-5">
+        <i class="fas fa-search fa-3x text-body-secondary mb-3"></i>
+        <h3>No employees found</h3>
+        <p class="text-body-secondary">Try adjusting your search criteria.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Replace existing back button with the component -->
+<div class="mt-4">
+    {% include 'components/back_button.html' %}
+</div>
+{% endblock %}

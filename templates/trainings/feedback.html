@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Training Feedback{% endblock %}
+
+{% block extra_css %}
+<style>
+    .rating {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: center;
+        margin-bottom: 30px;
+    }
+    .rating input {
+        display: none;
+    }
+    .rating label {
+        cursor: pointer;
+        width: 50px;
+        height: 50px;
+        margin: 0 5px;
+        position: relative;
+    }
+    .rating label:before {
+        content: "\f005";
+        font-family: "Font Awesome 5 Free";
+        font-weight: 400;
+        font-size: 2.5em;
+        /* Use CSS variable for star color that respects theme */
+        color: var(--bs-gray-400);
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+    .rating label:hover:before,
+    .rating label:hover ~ label:before,
+    .rating input:checked ~ label:before {
+        font-weight: 900;
+        color: #ffc107; /* Using Bootstrap warning color - works in both themes */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('trainings') }}">Training Programs</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('view_training', training_id=training.id) }}">{{ training.title }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Submit Feedback</li>
+            </ol>
+        </nav>
+        
+        <!-- Use bg-body-tertiary instead of hardcoded bg-color -->
+        <div class="bg-body-tertiary p-4 rounded-3 text-center mb-4">
+            <h3>{{ training.title }}</h3>
+            <div class="text-body-secondary mb-2">
+                <i class="fas fa-calendar-alt me-1"></i> 
+                {{ training.start_date.strftime('%b %d') }} - {{ training.end_date.strftime('%b %d, %Y') }}
+                <span class="mx-2">|</span>
+                <i class="fas fa-user-tie me-1"></i> {{ training.instructor }}
+            </div>
+            <span class="badge bg-success">Completed</span>
+        </div>
+        
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">
+                    <i class="fas fa-star me-2"></i>Rate This Training
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('training_feedback', training_id=training.id) }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="text-center mb-4">
+                        <h4>How would you rate your experience?</h4>
+                        <p class="text-body-secondary">Your feedback helps us improve future training programs</p>
+                        
+                        <div class="rating">
+                            {% for option in form.rating %}
+                                {{ option }}
+                                <label for="{{ option.id }}" title="{{ option.label.text.split('-')[1].strip() }}"></label>
+                            {% endfor %}
+                        </div>
+                        
+                        {% if form.rating.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.rating.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">{{ form.feedback.label }}</label>
+                        {{ form.feedback(class="form-control", rows=5, placeholder="Please share your thoughts about the training content, instructor, materials, etc.") }}
+                        {% if form.feedback.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.feedback.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('view_training', training_id=training.id) }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancel
+                        </a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Note:</strong> Your feedback is valuable and helps us improve our training programs. All feedback is anonymous to the instructor.
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Update form submit button based on rating selection
+    $('input[name="{{ form.rating.name }}"]').change(function() {
+        let rating = $(this).val();
+        $('#submit').prop('disabled', false);
+    });
+});
+</script>
+{% endblock %}

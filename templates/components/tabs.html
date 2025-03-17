@@ -1,0 +1,43 @@
+{# 
+  Reusable tab navigation component
+  
+  Parameters:
+  - id: Base ID to use for the tabs
+  - tabs: Array of tab items [{id, title, icon, active}]
+  - class: Additional CSS classes for the tabs nav
+  
+  Usage example:
+  {% set profile_tabs = [
+    {'id': 'info', 'title': 'Profile Info', 'icon': 'bi-person', 'active': true},
+    {'id': 'edit', 'title': 'Edit Profile', 'icon': 'bi-pencil'}
+  ] %}
+  {% set tabs_id = 'profile' %}
+  
+  {% include 'components/tabs.html' %}
+  
+  <div class="tab-content" id="profileTabContent">
+    <div class="tab-pane fade show active" id="profile-info-tab-pane" role="tabpanel">
+      Content for info tab
+    </div>
+  </div>
+#}
+
+<ul class="nav nav-tabs {{ class }}" id="{{ id }}Tabs" role="tablist">
+  {% for tab in tabs %}
+  <li class="nav-item" role="presentation">
+    <button class="nav-link {{ 'active' if tab.active else '' }}" 
+            id="{{ id }}-{{ tab.id }}-tab" 
+            data-bs-toggle="tab" 
+            data-bs-target="#{{ id }}-{{ tab.id }}-tab-pane" 
+            type="button" 
+            role="tab" 
+            aria-controls="{{ id }}-{{ tab.id }}-tab-pane" 
+            aria-selected="{{ 'true' if tab.active else 'false' }}">
+      {% if tab.icon %}
+      <i class="bi {{ tab.icon }} me-1"></i> 
+      {% endif %}
+      {{ tab.title }}
+    </button>
+  </li>
+  {% endfor %}
+</ul>

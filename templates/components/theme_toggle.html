@@ -1,0 +1,40 @@
+{# 
+  Theme Toggle Component for Navigation Bar
+  
+  This component provides buttons to switch between dark mode, light mode, and system preference.
+  
+  Usage: 
+  {% include 'components/theme_toggle.html' %}
+#}
+
+<div class="theme-toggle-wrapper" aria-label="Theme settings" role="group">
+  <!-- Light Theme Toggle -->
+  <button class="theme-toggle" 
+          data-theme="light" 
+          type="button" 
+          aria-label="Use light theme"
+          aria-pressed="false">
+    <i class="fas fa-sun"></i>
+    <span class="theme-toggle-label">Light Mode</span>
+  </button>
+  
+  <!-- System Preference Toggle -->
+  <button class="theme-toggle" 
+          data-theme="auto" 
+          type="button" 
+          aria-label="Use system theme preference"
+          aria-pressed="false">
+    <i class="fas fa-desktop"></i>
+    <span class="theme-toggle-label">System Preference</span>
+  </button>
+  
+  <!-- Dark Theme Toggle -->
+  <button class="theme-toggle" 
+          data-theme="dark" 
+          type="button" 
+          aria-label="Use dark theme"
+          aria-pressed="false">
+    <i class="fas fa-moon"></i>
+    <span class="theme-toggle-label">Dark Mode</span>
+  </button>
+</div>

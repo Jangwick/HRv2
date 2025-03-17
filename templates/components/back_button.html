@@ -1,0 +1,22 @@
+{# 
+  Reusable back button component for top page navigation
+  
+  Parameters:
+  - url: URL to navigate back to (default: dashboard)
+  - text: Button text (default: "Back to Dashboard")
+  - icon: Button icon class (default: "fas fa-arrow-left")
+  - variant: Button variant (default: "outline-primary")
+  - class: Additional CSS classes
+  
+  Usage example:
+  {% include 'components/back_button.html' %}
+  {% with url=url_for('employee_list'), text='Back to Employee List' %}
+    {% include 'components/back_button.html' %}
+  {% endwith %}
+#}
+
+<div class="back-nav mb-4">
+  <a href="{{ url|default(url_for('dashboard')) }}" class="btn btn-{{ variant|default('outline-primary') }} {{ class }}">
+    <i class="{{ icon|default('fas fa-arrow-left') }} me-2"></i>{{ text|default('Back to Dashboard') }}
+  </a>
+</div>

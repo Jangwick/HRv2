@@ -1,0 +1,53 @@
+{# 
+  Reusable dropdown menu component
+  
+  Parameters:
+  - id: Unique ID for this dropdown
+  - text: Button text
+  - icon: Optional icon class
+  - items: Array of menu items
+  - variant: Button variant (default: 'primary')
+  - size: Button size (default: '')
+  - direction: Dropdown direction (default: 'down')
+  - hide_caret: Whether to hide the dropdown caret (default: false)
+  
+  Usage example:
+  {% set export_items = [
+    {'text': 'Export to PDF', 'url': url_for('export_pdf'), 'icon': 'bi-file-pdf'},
+    {'text': 'Export to Excel', 'url': url_for('export_excel'), 'icon': 'bi-file-excel'},
+    {'divider': true},
+    {'text': 'Print', 'url': '#', 'icon': 'bi-printer'}
+  ] %}
+  
+  {% include 'components/dropdown_menu.html' with id='exportDropdown' text='Export' icon='bi-download' items=export_items variant='success' %}
+#}
+
+<div class="dropdown {{ 'dropup' if direction == 'up' else 'dropdown-center' if direction == 'center' else '' }}">
+  <button class="btn btn-{{ variant|default('primary') }} {{ size }}" id="{{ id }}" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    {% if icon %}
+    <i class="{{ icon }} me-2"></i>
+    {% endif %}
+    {{ text }}
+    {% if not hide_caret %}
+    <i class="bi bi-caret-down-fill ms-1"></i>
+    {% endif %}
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="{{ id }}">
+    {% for item in items %}
+      {% if item.divider %}
+        <li><hr class="dropdown-divider"></li>
+      {% elif item.header %}
+        <li><h6 class="dropdown-header">{{ item.header }}</h6></li>
+      {% else %}
+        <li>
+          <a class="dropdown-item {{ item.class }}" href="{{ item.url }}" {% if item.target %}target="{{ item.target }}"{% endif %}>
+            {% if item.icon %}
+            <i class="{{ item.icon }} me-2"></i>
+            {% endif %}
+            {{ item.text }}
+          </a>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</div>

@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}HR System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="mb-4">
+                <i class="fas fa-fingerprint fa-4x text-primary mb-3"></i>
+                <h1 class="display-4 fw-bold">HR Management System</h1>
+                <p class="lead text-body-secondary">A comprehensive solution for employee management, training, and HR operations</p>
+            </div>
+            
+            <div class="card border-0 shadow-sm bg-body-tertiary rounded-4 mb-4">
+                <div class="card-body p-5">
+                    <h2 class="card-title mb-4">Welcome to HR System</h2>
+                    
+                    <p class="card-text text-body-secondary">Our platform streamlines HR operations, enhances employee engagement, and simplifies administrative tasks.</p>
+                    
+                    <div class="d-grid gap-3 d-sm-flex justify-content-sm-center mt-4">
+                        {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg px-4">
+                            <i class="fas fa-tachometer-alt me-2"></i>Go to Dashboard
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg px-4">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </a>
+                        <a href="{{ url_for('signup') }}" class="btn btn-outline-secondary btn-lg px-4">
+                            <i class="fas fa-user-plus me-2"></i>Sign Up
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-body-secondary">
+                <p>Secure authentication with Argon2 password hashing</p>
+                <p>© 2025 HR Management System</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

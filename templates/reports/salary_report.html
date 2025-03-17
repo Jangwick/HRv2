@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Salary Report{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('hr_reports') }}">Reports</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Salary Report</li>
+    </ol>
+</nav>
+
+<div class="bg-primary bg-gradient text-white p-4 rounded-3 mb-4">
+    <h2><i class="fas fa-money-bill-wave me-2"></i>Employee Salary Report</h2>
+    <p class="lead mb-0">Generate comprehensive salary reports with filtering and grouping options</p>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-body">
+                <h4 class="mb-0"><i class="fas fa-filter me-2 text-success"></i>Report Parameters</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('salary_report') }}" id="salaryReportForm">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">{{ form.department.label }}</label>
+                            {{ form.department(class="form-select") }}
+                            <div class="form-text">Select a department or leave blank for all departments</div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label">{{ form.date_range.label }}</label>
+                            {{ form.date_range(class="form-select", id="dateRangeSelect") }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3 d-none" id="customDateInputs">
+                        <div class="col-md-6">
+                            <label class="form-label">{{ form.start_date.label }}</label>
+                            {{ form.start_date(class="form-control datepicker", placeholder="Select start date") }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">{{ form.end_date.label }}</label>
+                            {{ form.end_date(class="form-control datepicker", placeholder="Select end date") }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">{{ form.group_by.label }}</label>
+                            {{ form.group_by(class="form-select") }}
+                            <div class="form-text">Group results by department, salary type or no grouping</div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label">{{ form.export_format.label }}</label>
+                            {{ form.export_format(class="form-select") }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            {{ form.include_inactive(class="form-check-input") }}
+                            <label class="form-check-label">{{ form.include_inactive.label }}</label>
+                            <div class="form-text">Include employees who are no longer with the company</div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('hr_reports') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Reports
+                        </a>
+                        {{ form.submit(class="btn btn-success", id="generateBtn") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-body d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2 text-primary"></i>About This Report</h5>
+            </div>
+            <div class="card-body">
+                <!-- Add the alert for PDF generation information -->
+                <div class="alert alert-info mb-4">
+                    <h6><i class="fas fa-file-pdf me-2"></i>PDF Export Information</h6>
+                    <p class="mb-0">PDF export is implemented using ReportLab (a pure Python PDF generation library) 
+                    to ensure compatibility across all platforms, including Windows where GTK dependencies might be missing.</p>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-check-circle me-2 text-success"></i>What's Included</h6>
+                        <ul>
+                            <li>Basic employee information</li>
+                            <li>Current salary details</li>
+                            <li>Salary comparison by department</li>
+                            <li>Monthly/annual equivalent calculations</li>
+                            <li>Statistical summaries</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-shield-alt me-2 text-primary"></i>Data Security</h6>
+                        <p>This report contains sensitive compensation data. Please ensure you:</p>
+                        <ul>
+                            <li>Handle all exported reports securely</li>
+                            <li>Do not share salary information inappropriately</li>
+                            <li>Comply with company confidentiality policies</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+$(document).ready(function() {
+    // Initialize date pickers
+    $(".datepicker").flatpickr({
+        dateFormat: "Y-m-d",
+        allowInput: true
+    });
+    
+    // Show/hide custom date inputs based on date range selection
+    $('#dateRangeSelect').change(function() {
+        if ($(this).val() === 'custom') {
+            $('#customDateInputs').removeClass('d-none');
+        } else {
+            $('#customDateInputs').addClass('d-none');
+        }
+    });
+    
+    // Form submission loading state
+    $('#salaryReportForm').submit(function() {
+        $('#generateBtn').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...');
+        $('#generateBtn').prop('disabled', true);
+    });
+});
+</script>
+{% endblock %}

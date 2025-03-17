@@ -1,0 +1,190 @@
+/* HR System UI Kit - Core design elements */
+
+:root {
+  /* Design system - colors */
+  --hr-primary: #4e73df;
+  --hr-primary-hover: #2e59d9;
+  --hr-success: #1cc88a;
+  --hr-info: #36b9cc;
+  --hr-warning: #f6c23e;
+  --hr-danger: #e74a3b;
+  --hr-secondary: #858796;
+  --hr-light: #f8f9fc;
+  --hr-dark: #5a5c69;
+
+  /* Spacing system */
+  --hr-space-xs: 0.25rem;   /* 4px */
+  --hr-space-sm: 0.5rem;    /* 8px */
+  --hr-space-md: 1rem;      /* 16px */
+  --hr-space-lg: 1.5rem;    /* 24px */
+  --hr-space-xl: 2rem;      /* 32px */
+  --hr-space-xxl: 3rem;     /* 48px */
+
+  /* Typography */
+  --hr-font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --hr-body-font-size: 1rem;
+  
+  /* Border radius */
+  --hr-border-radius-sm: 0.25rem;
+  --hr-border-radius: 0.35rem;
+  --hr-border-radius-lg: 0.5rem;
+  --hr-border-radius-xl: 1rem;
+}
+
+/* Typography enhancements */
+body {
+  font-family: var(--hr-font-family);
+  font-size: var(--hr-body-font-size);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: var(--hr-space-md);
+}
+
+/* Enhanced card designs */
+.hr-card {
+  border: none;
+  border-radius: var(--hr-border-radius);
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hr-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0.5rem 2rem rgba(58, 59, 69, 0.15);
+}
+
+.hr-card-header {
+  background: transparent;
+  padding: var(--hr-space-lg);
+  border-bottom: 1px solid rgba(var(--bs-primary-rgb), 0.1);
+}
+
+.hr-card-body {
+  padding: var(--hr-space-lg);
+}
+
+/* Button enhancements */
+.hr-btn {
+  border-radius: var(--hr-border-radius);
+  padding: 0.5rem 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.hr-btn::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 120%;
+  height: 0;
+  padding-bottom: 120%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.hr-btn:active::after {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  transition: 0s;
+}
+
+/* Inputs with improved focus states */
+.hr-input {
+  border-radius: var(--hr-border-radius);
+  border: 1px solid var(--bs-border-color);
+  padding: 0.6rem 1rem;
+  transition: all 0.2s ease;
+}
+
+.hr-input:focus {
+  border-color: var(--hr-primary);
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+/* Badge enhancements */
+.hr-badge {
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 0.35em 0.65em;
+  border-radius: 30px;
+}
+
+/* Skeleton loader for content */
+.skeleton {
+  background: linear-gradient(90deg, rgba(190, 190, 190, 0.2) 25%, rgba(129, 129, 129, 0.24) 37%, rgba(190, 190, 190, 0.2) 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+/* Page section styles */
+.page-section {
+  position: relative;
+  padding: var(--hr-space-xl) 0;
+}
+
+.page-header {
+  position: relative;
+  padding: var(--hr-space-xl) var(--hr-space-lg);
+  margin-bottom: var(--hr-space-xl);
+  background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-primary-bg-subtle) 100%);
+  border-radius: var(--hr-border-radius);
+  color: var(--bs-white);
+}
+
+/* Back navigation styling */
+.back-nav {
+  display: flex;
+  align-items: center;
+}
+
+.back-nav .btn {
+  border-radius: 30px;
+  padding: 0.5rem 1.2rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.back-nav .btn:hover {
+  transform: translateX(-5px);
+}
+
+/* Responsive font sizes */
+@media (max-width: 768px) {
+  :root {
+    --hr-body-font-size: 0.95rem;
+  }
+  
+  h1 {
+    font-size: 1.8rem;
+  }
+  
+  h2 {
+    font-size: 1.5rem;
+  }
+}
+
+/* Accessibility focus style */
+:focus-visible {
+  outline: 3px solid rgba(var(--bs-primary-rgb), 0.5);
+  outline-offset: 2px;
+}

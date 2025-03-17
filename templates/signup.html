@@ -1,0 +1,409 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block extra_css %}
+<style>
+    .password-strength-meter {
+        height: 5px;
+        width: 100%;
+        background-color: #eee;
+        border-radius: 3px;
+        margin-top: 8px;
+    }
+    .password-strength-meter div {
+        height: 100%;
+        border-radius: 3px;
+        transition: width 0.5s ease;
+    }
+    .strength-weak { width: 25%; background-color: #f44336; }
+    .strength-fair { width: 50%; background-color: #ff9800; }
+    .strength-good { width: 75%; background-color: #2196f3; }
+    .strength-strong { width: 100%; background-color: #4caf50; }
+    .step-indicator {
+        margin: 20px 0;
+    }
+    .step-indicator .step {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #e9ecef;
+        color: #6c757d;
+        text-align: center;
+        line-height: 30px;
+        margin: 0 10px;
+        position: relative;
+    }
+    .step-indicator .step.active {
+        background-color: #4e73df;
+        color: white;
+    }
+    .step-indicator .step.completed {
+        background-color: #1cc88a;
+        color: white;
+    }
+    .step-indicator .connector {
+        display: inline-block;
+        width: 80px;
+        height: 2px;
+        background-color: #e9ecef;
+        vertical-align: middle;
+    }
+    .step-indicator .connector.active {
+        background-color: #4e73df;
+    }
+    .signup-section {
+        display: none;
+    }
+    .signup-section.active {
+        display: block;
+    }
+    .signup-section {
+        animation: fadeEffect 0.5s;
+    }
+    @keyframes fadeEffect {
+        from {opacity: 0;}
+        to {opacity: 1;}
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="text-center mb-4">
+            <h2 class="fw-bold"><i class="fas fa-user-plus me-2"></i>Create Your Account</h2>
+            <p class="text-muted">Join the HR System to access employee management tools</p>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-primary text-white p-3">
+                <h3 class="card-title mb-0 text-center">Sign Up</h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="step-indicator text-center">
+                    <span class="step active" id="step1">1</span>
+                    <span class="connector" id="connector1"></span>
+                    <span class="step" id="step2">2</span>
+                    <span class="connector" id="connector2"></span>
+                    <span class="step" id="step3">3</span>
+                </div>
+                
+                <form method="POST" action="{{ url_for('signup') }}" id="signupForm">
+                    {{ form.hidden_tag() }}
+                    
+                    <!-- Step 1: Account Info -->
+                    <div class="signup-section active" id="section1">
+                        <h4 class="mb-3">Account Information</h4>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                {{ form.username(class="form-control", placeholder="Choose a username") }}
+                            </div>
+                            {% if form.username.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.username.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                {{ form.email(class="form-control", placeholder="Enter your email address") }}
+                            </div>
+                            {% if form.email.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.email.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex justify-content-end mt-4">
+                            <button type="button" class="btn btn-primary next-step">Next <i class="fas fa-chevron-right ms-2"></i></button>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2: Password -->
+                    <div class="signup-section" id="section2">
+                        <h4 class="mb-3">Create a Password</h4>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                {{ form.password(class="form-control", placeholder="Create a secure password", id="password") }}
+                                <button type="button" class="btn btn-outline-secondary toggle-password" tabindex="-1">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="password-strength-meter mt-2">
+                                <div id="strength-meter"></div>
+                            </div>
+                            <div class="form-text mt-1" id="password-strength-text">
+                                Password strength: <span id="strength-text">Type a password</span>
+                            </div>
+                            <ul class="form-text mt-2 small">
+                                <li>Use at least 8 characters</li>
+                                <li>Include uppercase letters (A-Z)</li>
+                                <li>Include numbers (0-9)</li>
+                                <li>Include special characters (!@#$%)</li>
+                            </ul>
+                            {% if form.password.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Confirm Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                {{ form.confirm_password(class="form-control", placeholder="Confirm your password", id="confirm_password") }}
+                                <button type="button" class="btn btn-outline-secondary toggle-password" tabindex="-1">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div id="password-match" class="form-text mt-1"></div>
+                            {% if form.confirm_password.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.confirm_password.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-secondary prev-step"><i class="fas fa-chevron-left me-2"></i> Back</button>
+                            <button type="button" class="btn btn-primary next-step">Next <i class="fas fa-chevron-right ms-2"></i></button>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Department & Role -->
+                    <div class="signup-section" id="section3">
+                        <h4 class="mb-3">Department & Role Information</h4>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Department</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-building"></i></span>
+                                {{ form.department(class="form-select") }}
+                            </div>
+                            {% if form.department.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.department.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text mt-1">
+                                Select the department you belong to
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Account Type</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user-tag"></i></span>
+                                {{ form.role(class="form-select") }}
+                            </div>
+                            {% if form.role.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.role.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text mt-2">
+                                <p><strong>Note:</strong> For security reasons:</p>
+                                <ul>
+                                    {% if admin_exists %}
+                                        <li><span class="text-danger">Administrator account already exists. Admin role is not available.</span></li>
+                                    {% else %}
+                                        <li>The first registered user can select any role</li>
+                                    {% endif %}
+                                    <li>New users will be assigned as "Employee" by default</li>
+                                    <li>Only administrators can later promote users to HR or Admin roles</li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="termsCheck" required>
+                            <label class="form-check-label" for="termsCheck">
+                                I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                            </label>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="button" class="btn btn-secondary prev-step"><i class="fas fa-chevron-left me-2"></i> Back</button>
+                            <button type="submit" class="btn btn-success" id="submitBtn">
+                                <i class="fas fa-user-check me-2"></i> Create Account
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center py-3">
+                <p class="mb-0">Already have an account? <a href="{{ url_for('login') }}" class="fw-bold text-decoration-none">Log in</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Multi-step form navigation
+    $('.next-step').click(function() {
+        const currentSection = $(this).closest('.signup-section');
+        const currentStepNumber = currentSection.attr('id').replace('section', '');
+        const nextStepNumber = parseInt(currentStepNumber) + 1;
+        
+        // Validate fields in current section
+        let isValid = true;
+        currentSection.find('input, select').each(function() {
+            if ($(this).prop('required') && !$(this).val()) {
+                $(this).addClass('is-invalid');
+                isValid = false;
+            } else {
+                $(this).removeClass('is-invalid');
+            }
+        });
+        
+        if (currentStepNumber === '2') {
+            // Password validation
+            const password = $('#password').val();
+            const confirmPassword = $('#confirm_password').val();
+            
+            if (password.length < 8) {
+                $('#password').addClass('is-invalid');
+                isValid = false;
+            }
+            
+            if (password !== confirmPassword) {
+                $('#confirm_password').addClass('is-invalid');
+                isValid = false;
+            }
+        }
+        
+        if (isValid) {
+            // Update steps
+            currentSection.removeClass('active');
+            $('#section' + nextStepNumber).addClass('active');
+            
+            // Update step indicators
+            $('#step' + currentStepNumber).addClass('completed').removeClass('active');
+            $('#connector' + currentStepNumber).addClass('active');
+            $('#step' + nextStepNumber).addClass('active');
+        }
+    });
+    
+    $('.prev-step').click(function() {
+        const currentSection = $(this).closest('.signup-section');
+        const currentStepNumber = currentSection.attr('id').replace('section', '');
+        const prevStepNumber = parseInt(currentStepNumber) - 1;
+        
+        // Update sections
+        currentSection.removeClass('active');
+        $('#section' + prevStepNumber).addClass('active');
+        
+        // Update step indicators
+        $('#step' + currentStepNumber).removeClass('active');
+        $('#connector' + prevStepNumber).removeClass('active');
+        $('#step' + prevStepNumber).removeClass('completed').addClass('active');
+    });
+    
+    // Toggle password visibility
+    $('.toggle-password').click(function() {
+        const passwordInput = $(this).closest('.input-group').find('input');
+        const icon = $(this).find('i');
+        
+        if (passwordInput.attr('type') === 'password') {
+            passwordInput.attr('type', 'text');
+            icon.removeClass('fa-eye').addClass('fa-eye-slash');
+        } else {
+            passwordInput.attr('type', 'password');
+            icon.removeClass('fa-eye-slash').addClass('fa-eye');
+        }
+    });
+    
+    // Password strength meter
+    $('#password').on('input', function() {
+        const password = $(this).val();
+        let strength = 0;
+        let strengthText = '';
+        let strengthClass = '';
+        
+        if (password.length >= 8) strength += 1;
+        if (/[A-Z]/.test(password)) strength += 1;
+        if (/[0-9]/.test(password)) strength += 1;
+        if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+        
+        switch (strength) {
+            case 0:
+                strengthText = 'Type a password';
+                strengthClass = '';
+                break;
+            case 1:
+                strengthText = 'Weak';
+                strengthClass = 'strength-weak';
+                break;
+            case 2:
+                strengthText = 'Fair';
+                strengthClass = 'strength-fair';
+                break;
+            case 3:
+                strengthText = 'Good';
+                strengthClass = 'strength-good';
+                break;
+            case 4:
+                strengthText = 'Strong';
+                strengthClass = 'strength-strong';
+                break;
+        }
+        
+        $('#strength-text').text(strengthText);
+        $('#strength-meter').attr('class', strengthClass);
+    });
+    
+    // Check if passwords match
+    $('#confirm_password').on('input', function() {
+        const password = $('#password').val();
+        const confirmPassword = $(this).val();
+        
+        if (confirmPassword === '') {
+            $('#password-match').text('');
+        } else if (password === confirmPassword) {
+            $('#password-match').html('<i class="fas fa-check-circle text-success"></i> Passwords match').addClass('text-success').removeClass('text-danger');
+        } else {
+            $('#password-match').html('<i class="fas fa-times-circle text-danger"></i> Passwords do not match').addClass('text-danger').removeClass('text-success');
+        }
+    });
+    
+    // Form submission loading state
+    $('#signupForm').submit(function() {
+        if (!$('#termsCheck').is(':checked')) {
+            alert('Please agree to the Terms of Service and Privacy Policy');
+            return false;
+        }
+        
+        $('#submitBtn').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Creating account...');
+        $('#submitBtn').prop('disabled', true);
+    });
+});
+</script>
+{% endblock %}

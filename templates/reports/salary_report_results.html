@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block title %}Salary Report Results{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('hr_reports') }}">Reports</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('salary_report') }}">Salary Report</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Results</li>
+    </ol>
+</nav>
+
+<div class="bg-primary bg-gradient text-white p-4 rounded-3 mb-4">
+    <div class="d-flex justify-content-between align-items-start">
+        <div>
+            <h2><i class="fas fa-money-bill-wave me-2"></i>Salary Report Results</h2>
+            <p class="lead mb-0">Generated on {{ now.strftime('%B %d, %Y') }}</p>
+        </div>
+        <div class="btn-group">
+            <a href="{{ url_for('salary_report', export_format='csv', 
+                              department=form.department.data, 
+                              date_range=form.date_range.data, 
+                              group_by=form.group_by.data, 
+                              include_inactive=form.include_inactive.data) }}" 
+               class="btn btn-light me-2">
+                <i class="fas fa-file-csv me-2"></i>Export to CSV
+            </a>
+            <a href="{{ url_for('salary_report', export_format='pdf', 
+                              department=form.department.data, 
+                              date_range=form.date_range.data, 
+                              group_by=form.group_by.data, 
+                              include_inactive=form.include_inactive.data) }}" 
+               class="btn btn-light">
+                <i class="fas fa-file-pdf me-2"></i>Export to PDF
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Summary Statistics -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h3 class="mb-3">Report Summary</h3>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100">
+            <div class="card-body text-center p-4">
+                <div class="fs-2 fw-bold text-primary">{{ summary.total_employees }}</div>
+                <div class="text-muted small">Total Employees</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100">
+            <div class="card-body text-center p-4">
+                <div class="fs-2 fw-bold text-success">{{ summary.departments }}</div>
+                <div class="text-muted small">Departments</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100">
+            <div class="card-body text-center p-4">
+                <div class="fs-2 fw-bold text-info">{{ "%.2f"|format(summary.avg_monthly) }} USD</div>
+                <div class="text-muted small">Average Monthly</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100">
+            <div class="card-body text-center p-4">
+                <div class="fs-2 fw-bold text-danger">{{ "%.2f"|format(summary.avg_annual) }} USD</div>
+                <div class="text-muted small">Average Annual</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Results -->
+<div class="card">
+    <div class="card-header bg-body">
+        <h4 class="mb-0"><i class="fas fa-table me-2 text-success"></i>Detailed Salary Data</h4>
+    </div>
+    <div class="card-body p-0">
+        {% if form.group_by.data == 'none' %}
+            <!-- No Grouping -->
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Employee</th>
+                            <th>Department</th>
+                            <th>Position</th>
+                            <th>Type</th>
+                            <th>Current Salary</th>
+                            <th>Monthly Equivalent</th>
+                            <th>Annual Equivalent</th>
+                            <th>Effective Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in data %}
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.department }}</td>
+                            <td>{{ item.position }}</td>
+                            <td>{{ item.salary_type.title() }}</td>
+                            <td>{{ item.amount }}</td>
+                            <td>{{ "%.2f"|format(item.monthly_equivalent) }} {{ item.currency }}</td>
+                            <td>{{ "%.2f"|format(item.annual_equivalent) }} {{ item.currency }}</td>
+                            <td>{{ item.effective_date }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <!-- Grouped View -->
+            {% for group_name, group_items in grouped_data.items() %}
+                <div class="bg-light p-3 mb-3">
+                    <i class="fas fa-layer-group me-2"></i>{{ group_name }} 
+                    <span class="badge bg-primary ms-2">{{ group_items|length }} employees</span>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Employee</th>
+                                {% if form.group_by.data != 'department' %}
+                                <th>Department</th>
+                                {% endif %}
+                                <th>Position</th>
+                                {% if form.group_by.data != 'salary_type' %}
+                                <th>Type</th>
+                                {% endif %}
+                                <th>Current Salary</th>
+                                <th>Monthly Equivalent</th>
+                                <th>Annual Equivalent</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in group_items %}
+                            <tr>
+                                <td>{{ item.name }}</td>
+                                {% if form.group_by.data != 'department' %}
+                                <td>{{ item.department }}</td>
+                                {% endif %}
+                                <td>{{ item.position }}</td>
+                                {% if form.group_by.data != 'salary_type' %}
+                                <td>{{ item.salary_type.title() }}</td>
+                                {% endif %}
+                                <td>{{ item.amount }}</td>
+                                <td>{{ "%.2f"|format(item.monthly_equivalent) }} {{ item.currency }}</td>
+                                <td>{{ "%.2f"|format(item.annual_equivalent) }} {{ item.currency }}</td>
+                            </tr>
+                            {% endfor %}
+                            <!-- Group Summary Row -->
+                            <tr class="table-secondary">
+                                <td colspan="{% if form.group_by.data == 'department' %}3{% elif form.group_by.data == 'salary_type' %}4{% else %}5{% endif %}"><strong>Group Summary</strong></td>
+                                <td><strong>{{ "%.2f"|format(group_items|sum(attribute='monthly_equivalent')) }} USD</strong></td>
+                                <td><strong>{{ "%.2f"|format(group_items|sum(attribute='annual_equivalent')) }} USD</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+<!-- Actions -->
+<div class="d-flex justify-content-between mt-4">
+    <a href="{{ url_for('salary_report') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-filter me-2"></i>Modify Report
+    </a>
+    <a href="{{ url_for('hr_reports') }}" class="btn btn-outline-primary">
+        <i class="fas fa-chart-line me-2"></i>Back to Reports
+    </a>
+</div>
+{% endblock %}

@@ -1,0 +1,294 @@
+{% extends "base.html" %}
+
+{% block title %}{{ employee.get_display_name() }} - Profile{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-header {
+        background-color: var(--bs-primary);
+        color: white;
+        padding: 2rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+    .profile-image {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 5px solid white;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .info-card {
+        height: 100%;
+        transition: all 0.3s ease;
+    }
+    .info-card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Back button at top of the page -->
+{% with url=url_for('employee_list'), text='Back to Employee List' %}
+  {% include 'components/back_button.html' %}
+{% endwith %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('employee_list') }}">Employees</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ employee.username }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- Profile Header -->
+<div class="profile-header">
+    <div class="row align-items-center">
+        <div class="col-md-auto mb-3 mb-md-0 text-center">
+            {% if employee.profile and employee.profile.has_profile_image() %}
+                <img src="{{ get_profile_image_url(employee.profile.profile_image, 150, 150, employee.profile.cloudinary_version) }}" alt="Profile Picture" class="profile-image">
+            {% else %}
+                <div class="profile-image d-flex align-items-center justify-content-center bg-secondary">
+                    <i class="fas fa-user fa-4x text-white opacity-75"></i>
+                </div>
+            {% endif %}
+        </div>
+        <div class="col">
+            <h1 class="mb-0">
+                {% if employee.profile and employee.profile.first_name and employee.profile.last_name %}
+                    {{ employee.profile.first_name }} {{ employee.profile.last_name }}
+                {% else %}
+                    {{ employee.username }}
+                {% endif %}
+            </h1>
+            <p class="lead mb-0">
+                {% if employee.profile and employee.profile.position %}
+                    {{ employee.profile.position }}
+                {% else %}
+                    {{ employee.department.replace('_', ' ').title() }}
+                {% endif %}
+            </p>
+            <div class="mt-2">
+                <span class="badge bg-light text-dark me-2">{{ employee.department.replace('_', ' ').replace('it', 'IT').title() }}</span>
+                <span class="badge {% if employee.role == 'admin' %}bg-danger{% elif employee.role == 'hr' %}bg-info{% else %}bg-secondary{% endif %}">
+                    {{ employee.role.replace('admin', 'Admin').replace('hr', 'HR') }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <!-- Personal Information -->
+    <div class="col-md-6 mb-4">
+        <div class="card info-card h-100">
+            <div class="card-header bg-body">
+                <h5 class="mb-0"><i class="fas fa-user me-2 text-primary"></i>Personal Information</h5>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tr>
+                        <th width="30%">Full Name</th>
+                        <td>
+                            {% if employee.profile and employee.profile.first_name and employee.profile.last_name %}
+                                {{ employee.profile.first_name }} {{ employee.profile.last_name }}
+                            {% else %}
+                                Not provided
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Username</th>
+                        <td>{{ employee.username }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email</th>
+                        <td>{{ employee.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Phone</th>
+                        <td>
+                            {% if employee.profile and employee.profile.phone_number %}
+                                {{ employee.profile.phone_number }}
+                            {% else %}
+                                Not provided
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Birth Date</th>
+                        <td>
+                            {% if employee.profile and employee.profile.birth_date %}
+                                {{ employee.profile.birth_date.strftime('%d %B, %Y') }}
+                            {% else %}
+                                Not provided
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Role</th>
+                        <td>{{ employee.role.replace('admin', 'Admin').replace('hr', 'HR') }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Employment Information -->
+    <div class="col-md-6 mb-4">
+        <div class="card info-card h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-briefcase me-2 text-primary"></i>Employment Details</h5>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tr>
+                        <th width="30%">Department</th>
+                        <td>{{ employee.department.replace('_', ' ').replace('it', 'IT').title() }}</td>
+                    </tr>
+                    <tr>
+                        <th>Position</th>
+                        <td>
+                            {% if employee.profile and employee.profile.position %}
+                                {{ employee.profile.position }}
+                            {% else %}
+                                Not specified
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Role</th>
+                        <td>{{ employee.role.title() }}</td>
+                    </tr>
+                    <tr>
+                        <th>Hire Date</th>
+                        <td>
+                            {% if employee.profile and employee.profile.hire_date %}
+                                {{ employee.profile.hire_date.strftime('%d %B, %Y') }}
+                            {% else %}
+                                Not provided
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Contact & Address -->
+    <div class="col-md-6 mb-4">
+        <div class="card info-card h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2 text-primary"></i>Contact & Location</h5>
+            </div>
+            <div class="card-body">
+                {% if employee.profile and (employee.profile.address or employee.profile.city or employee.profile.country) %}
+                    <address>
+                        {% if employee.profile.address %}
+                            {{ employee.profile.address }}<br>
+                        {% endif %}
+                        {% if employee.profile.city or employee.profile.country %}
+                            {% if employee.profile.city %}{{ employee.profile.city }}{% endif %}
+                            {% if employee.profile.city and employee.profile.country %}, {% endif %}
+                            {% if employee.profile.country %}{{ employee.profile.country }}{% endif %}
+                        {% endif %}
+                    </address>
+                {% else %}
+                    <p>No address information provided.</p>
+                {% endif %}
+                
+                <hr>
+                
+                <div class="mt-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="me-3">
+                            <i class="fas fa-envelope fa-fw text-primary"></i>
+                        </div>
+                        <div>
+                            <strong>Email:</strong> 
+                            <a href="mailto:{{ employee.email }}">{{ employee.email }}</a>
+                        </div>
+                    </div>
+                    
+                    {% if employee.profile and employee.profile.phone_number %}
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <i class="fas fa-phone fa-fw text-primary"></i>
+                        </div>
+                        <div>
+                            <strong>Phone:</strong> 
+                            <a href="tel:{{ employee.profile.phone_number }}">{{ employee.profile.phone_number }}</a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Biography -->
+    <div class="col-md-6 mb-4">
+        <div class="card info-card h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-user-circle me-2 text-primary"></i>Biography</h5>
+            </div>
+            <div class="card-body">
+                {% if employee.profile and employee.profile.bio %}
+                    <p>{{ employee.profile.bio }}</p>
+                {% else %}
+                    <p class="text-muted">No biography information available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- HR Actions -->
+{% if current_user.is_admin() or current_user.is_hr() %}
+<div class="card mb-4">
+    <div class="card-header bg-body">
+        <h5 class="mb-0"><i class="fas fa-cogs me-2 text-primary"></i>HR Actions</h5>
+    </div>
+    <div class="card-body">
+        <div class="row row-cols-1 row-cols-md-4 g-3">
+            {% if current_user.is_admin() %}
+            <div class="col">
+                <div class="d-grid">
+                    <button class="btn btn-outline-primary">
+                        <i class="fas fa-user-edit me-2"></i>Edit User Data
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+            <div class="col">
+                <div class="d-grid">
+                    <a href="{{ url_for('manage_salary', employee_id=employee.id) }}" class="btn btn-outline-success">
+                        <i class="fas fa-money-bill-alt me-2"></i>Manage Salary
+                    </a>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-grid">
+                    <button class="btn btn-outline-secondary">
+                        <i class="fas fa-file-alt me-2"></i>Generate Report
+                    </button>
+                </div>
+            </div>
+            <div class="col">
+                <div class="d-grid">
+                    <button class="btn btn-outline-info">
+                        <i class="fas fa-envelope me-2"></i>Send Message
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

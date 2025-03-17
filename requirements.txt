@@ -1,0 +1,23 @@
+flask
+flask-sqlalchemy
+flask-login
+flask-wtf
+wtforms
+argon2-cffi
+email-validator
+itsdangerous
+flask-mail
+Werkzeug
+python-dotenv
+cloudinary
+pillow
+pandas
+# Remove weasyprint due to Windows GTK dependency issues
+# weasyprint==59.0
+# Use reportlab instead - pure Python PDF generation
+reportlab
+# For Excel export
+openpyxl
+XlsxWriter
+supabase
+google-genai

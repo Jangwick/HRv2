@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Training Program{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('trainings') }}">Training Programs</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('view_training', training_id=training.id) }}">{{ training.title }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Edit</li>
+            </ol>
+        </nav>
+        
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">
+                    <i class="fas fa-edit me-2"></i>Edit Training Program
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('edit_training', training_id=training.id) }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.title.label }}</label>
+                        {{ form.title(class="form-control") }}
+                        {% if form.title.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.title.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.category.label }}</label>
+                        {{ form.category(class="form-select") }}
+                        {% if form.category.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.category.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.instructor.label }}</label>
+                        {{ form.instructor(class="form-control") }}
+                        {% if form.instructor.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.instructor.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">{{ form.start_date.label }}</label>
+                            {{ form.start_date(class="form-control", type="date") }}
+                            {% if form.start_date.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.start_date.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">{{ form.end_date.label }}</label>
+                            {{ form.end_date(class="form-control", type="date") }}
+                            {% if form.end_date.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.end_date.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.location.label }}</label>
+                        {{ form.location(class="form-control") }}
+                        {% if form.location.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.location.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.max_participants.label }}</label>
+                        {{ form.max_participants(class="form-control", type="number", min="0") }}
+                        <div class="form-text">Enter 0 for unlimited participants</div>
+                        {% if form.max_participants.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.max_participants.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.status.label }}</label>
+                        {{ form.status(class="form-select") }}
+                        {% if form.status.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.status.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">{{ form.description.label }}</label>
+                        {{ form.description(class="form-control", rows=5) }}
+                        {% if form.description.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.description.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('view_training', training_id=training.id) }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancel
+                        </a>
+                        {{ form.submit(class="btn btn-primary", value="Update Training Program") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

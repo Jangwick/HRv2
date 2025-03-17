@@ -1,0 +1,430 @@
+/* HR System Navigation Styles */
+
+/* Sidebar Navigation */
+.hr-sidebar {
+  width: 280px;
+  position: fixed;
+  left: -280px;
+  top: 0;
+  bottom: 0;
+  z-index: 1040;
+  background-color: var(--bs-body-bg);
+  box-shadow: 1px 0 10px rgba(0, 0, 0, 0.1);
+  transition: left 0.3s ease;
+  overflow-y: auto;
+}
+
+body.sidebar-open .hr-sidebar {
+  left: 0;
+}
+
+body.sidebar-open .content-wrapper {
+  margin-left: 280px;
+}
+
+.sidebar-toggle {
+  position: fixed;
+  top: 75px;
+  left: 15px;
+  z-index: 1030;
+  padding: 0.5rem;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+  transform: scale(1.1);
+}
+
+.hr-sidebar-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--bs-border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hr-sidebar-content {
+  padding: 1rem 0;
+}
+
+.hr-nav-item {
+  position: relative;
+}
+
+.hr-nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  color: var(--bs-body-color);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.hr-nav-link:hover, .hr-nav-link:focus {
+  background-color: var(--bs-tertiary-bg);
+}
+
+.hr-nav-link.active {
+  color: var(--bs-primary);
+  font-weight: 600;
+  background-color: var(--bs-primary-bg-subtle);
+}
+
+.hr-nav-link i {
+  margin-right: 0.75rem;
+  width: 20px;
+  text-align: center;
+}
+
+.hr-nav-divider {
+  margin: 1rem 1.5rem;
+  border-top: 1px solid var(--bs-border-color);
+}
+
+.hr-nav-heading {
+  padding: 0.5rem 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--bs-secondary-color);
+  letter-spacing: 0.05em;
+}
+
+/* Breadcrumb enhancements */
+.hr-breadcrumb {
+  background-color: var(--bs-tertiary-bg);
+  border-radius: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Main Navbar Improvements */
+.navbar .nav-link {
+  position: relative;
+  padding: 0.5rem 1rem;
+}
+
+.navbar .nav-link.active::after {
+  content: "";
+  position: absolute;
+  width: 80%;
+  height: 2px;
+  background: currentColor;
+  bottom: 0;
+  left: 10%;
+}
+
+/* Navigation indicators */
+.nav-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: 50%;
+  background: var(--bs-primary);
+  color: white;
+  margin-left: 0.5rem;
+}
+
+/* Mega Menu */
+.mega-menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: 1rem 0;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  background-color: var(--bs-body-bg);
+  border-radius: 0 0 var(--bs-border-radius) var(--bs-border-radius);
+  border: 1px solid var(--bs-border-color);
+  display: none;
+}
+
+.mega-menu.show {
+  display: block;
+  animation: fadeInDown 0.3s ease forwards;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments */
+@media (min-width: 992px) {
+  .hr-sidebar {
+    left: 0;
+    box-shadow: none;
+    border-right: 1px solid var(--bs-border-color);
+  }
+  
+  .sidebar-toggle {
+    display: none;
+  }
+  
+  .content-wrapper {
+    margin-left: 280px;
+    transition: margin-left 0.3s ease;
+  }
+  
+  body.sidebar-collapsed .hr-sidebar {
+    left: -280px;
+  }
+  
+  body.sidebar-collapsed .content-wrapper {
+    margin-left: 0;
+  }
+  
+  .sidebar-collapse-toggle {
+    display: block;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .content-wrapper {
+    margin-left: 0 !important;
+  }
+  
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1039;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+  }
+  
+  body.sidebar-open .sidebar-overlay {
+    display: block;
+  }
+  
+  .sidebar-collapse-toggle {
+    display: none;
+  }
+}
+
+/* New advanced navbar styles */
+.navbar-advanced {
+  padding: 0.5rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.navbar-advanced.sticky-top {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Navbar brand with logo */
+.navbar-logo-brand {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-logo {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--bs-primary);
+  color: white;
+  margin-right: 0.75rem;
+  transition: all 0.3s ease;
+}
+
+.navbar-logo i {
+  font-size: 1.25rem;
+}
+
+/* Navbar links with hover effects */
+.navbar-advanced .nav-link {
+  position: relative;
+  padding: 0.75rem 1rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.navbar-advanced .nav-link:hover {
+  background-color: rgba(var(--bs-primary-rgb), 0.1);
+}
+
+.navbar-advanced .nav-link.active {
+  color: var(--bs-primary);
+  font-weight: 500;
+}
+
+.navbar-advanced .nav-link.active::after {
+  content: "";
+  position: absolute;
+  left: 1rem;
+  right: 1rem;
+  bottom: 0.5rem;
+  height: 2px;
+  background: var(--bs-primary);
+  border-radius: 1px;
+}
+
+/* Dropdown enhancement */
+.hr-dropdown {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.hr-dropdown.show {
+  max-height: 500px; /* Adjust based on content */
+}
+
+.hr-dropdown-menu {
+  padding: 0.5rem 0 0.5rem 2.25rem;
+}
+
+.hr-dropdown-toggle {
+  position: relative;
+}
+
+.hr-dropdown-toggle::after {
+  content: "\F282"; /* Bootstrap Icons chevron-down */
+  font-family: "Bootstrap Icons";
+  position: absolute;
+  right: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.hr-dropdown-toggle[aria-expanded="true"]::after {
+  transform: rotate(180deg);
+}
+
+/* Improved breadcrumbs */
+.breadcrumb-arrow .breadcrumb-item+.breadcrumb-item::before {
+  content: "\F285"; /* Bootstrap Icons chevron-right */
+  font-family: "Bootstrap Icons";
+}
+
+/* Enhanced navigation indicators */
+.nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 10px;
+  color: white;
+  margin-left: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.nav-badge-primary {
+  background-color: var(--bs-primary);
+}
+
+.nav-badge-danger {
+  background-color: var(--bs-danger);
+}
+
+.nav-badge-warning {
+  background-color: var(--bs-warning);
+}
+
+/* Pulse effect for notification badges */
+.nav-badge-pulse {
+  animation: badge-pulse 1.5s infinite;
+}
+
+@keyframes badge-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Improved mega menu */
+.mega-menu {
+  width: 100%;
+  left: 0;
+  right: 0;
+  padding: 1.5rem 0;
+}
+
+.mega-menu-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--bs-primary);
+  margin-bottom: 0.75rem;
+}
+
+.mega-menu-item {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0;
+  color: var(--bs-body-color);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.mega-menu-item:hover {
+  color: var(--bs-primary);
+  transform: translateX(5px);
+}
+
+.mega-menu-item i {
+  margin-right: 0.75rem;
+  font-size: 1.1rem;
+  color: var(--bs-primary);
+}
+
+/* Responsive sidebar toggle button animation */
+.sidebar-toggle .toggler-icon {
+  width: 22px;
+  height: 2px;
+  background-color: currentColor;
+  display: block;
+  transition: all 0.3s ease;
+}
+
+.sidebar-toggle .toggler-icon+.toggler-icon {
+  margin-top: 4px;
+}
+
+.sidebar-toggle:hover .toggler-icon:nth-child(1) {
+  transform: translateY(-2px);
+}
+
+.sidebar-toggle:hover .toggler-icon:nth-child(3) {
+  transform: translateY(2px);
+}
+
+body.sidebar-open .sidebar-toggle .toggler-icon:nth-child(1) {
+  transform: rotate(45deg) translate(3px, 3px);
+}
+
+body.sidebar-open .sidebar-toggle .toggler-icon:nth-child(2) {
+  opacity: 0;
+}
+
+body.sidebar-open .sidebar-toggle .toggler-icon:nth-child(3) {
+  transform: rotate(-45deg) translate(4px, -4px);
+}

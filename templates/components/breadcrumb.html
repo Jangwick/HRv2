@@ -1,0 +1,26 @@
+{# 
+  Reusable breadcrumb component
+  
+  Parameters:
+  - breadcrumb_items: Array of breadcrumb items [{title, url, active}]
+  
+  Usage example:
+  {% set breadcrumb_items = [
+    {'title': 'Dashboard', 'url': url_for('dashboard')},
+    {'title': 'Employees', 'url': url_for('employee_list')},
+    {'title': 'John Doe', 'active': true}
+  ] %}
+  {% include 'components/breadcrumb.html' %}
+#}
+
+<nav aria-label="breadcrumb" class="hr-breadcrumb mb-4">
+  <ol class="breadcrumb mb-0">
+    {% for item in breadcrumb_items %}
+      {% if item.active %}
+        <li class="breadcrumb-item active" aria-current="page">{{ item.title }}</li>
+      {% else %}
+        <li class="breadcrumb-item"><a href="{{ item.url }}">{{ item.title }}</a></li>
+      {% endif %}
+    {% endfor %}
+  </ol>
+</nav>

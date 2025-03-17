@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Process Leave Request{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('leaves') }}">Leave Requests</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('view_leave', leave_id=leave.id) }}">Request Details</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Process Request</li>
+            </ol>
+        </nav>
+        
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">
+                    <i class="fas fa-check-circle me-2"></i>Process Leave Request
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-4 mb-md-0">
+                        <div class="card h-100">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Request Details</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th>Employee:</th>
+                                        <td>{{ leave.employee.username }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Type:</th>
+                                        <td>{{ leave.leave_type.title() }} Leave</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Duration:</th>
+                                        <td>{{ leave.duration_days }} day(s)</td>
+                                    </tr>
+                                    <tr>
+                                        <th>From:</th>
+                                        <td>{{ leave.start_date.strftime('%d %B, %Y') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>To:</th>
+                                        <td>{{ leave.end_date.strftime('%d %B, %Y') }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Employee's Reason</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">{{ leave.reason }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <form method="POST" action="{{ url_for('process_leave', leave_id=leave.id) }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Decision:</label>
+                        <div class="d-flex gap-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="{{ form.status.name }}" id="status_approve" value="approved" required>
+                                <label class="form-check-label" for="status_approve">
+                                    <span class="badge bg-success"><i class="fas fa-check me-1"></i> Approve</span>
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="{{ form.status.name }}" id="status_deny" value="denied" required>
+                                <label class="form-check-label" for="status_deny">
+                                    <span class="badge bg-danger"><i class="fas fa-times me-1"></i> Deny</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">{{ form.comment.label }}</label>
+                        {{ form.comment(class="form-control", rows=4, placeholder="Enter any comments about your decision here...") }}
+                        <div class="form-text">
+                            Please provide a reason, especially if denying the request.
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{{ url_for('view_leave', leave_id=leave.id) }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back
+                        </a>
+                        
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i> 
+            <strong>Note:</strong> Your decision is final and the employee will be notified of the status change.
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Change form button text and style based on selected option
+    $('input[name="{{ form.status.name }}"]').change(function() {
+        if ($(this).val() === 'approved') {
+            $('#submit').text('Approve Leave Request').removeClass('btn-danger').addClass('btn-success');
+        } else {
+            $('#submit').text('Deny Leave Request').removeClass('btn-success').addClass('btn-danger');
+        }
+    });
+});
+</script>
+{% endblock %}

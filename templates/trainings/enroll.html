@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Enroll Employees - {{ training.title }}{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    /* Add theme-aware styling for Select2 dropdowns */
+    .select2-container--default .select2-selection--multiple {
+        border: 1px solid var(--bs-border-color);
+        border-radius: var(--bs-border-radius);
+        min-height: 38px;
+        background-color: var(--bs-body-bg);
+    }
+    
+    /* Select2 dropdown theme adaptations */
+    body[data-bs-theme="dark"] .select2-container--default .select2-selection--multiple {
+        background-color: var(--bs-body-bg);
+        border-color: var(--bs-border-color);
+    }
+    
+    body[data-bs-theme="dark"] .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: var(--bs-primary);
+        color: #fff;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('trainings') }}">Training Programs</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('view_training', training_id=training.id) }}">{{ training.title }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Enroll Employees</li>
+            </ol>
+        </nav>
+        
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h3 class="card-title mb-0">
+                    <i class="fas fa-user-plus me-2"></i>Enroll Employees
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="alert alert-info">
+                    <div class="d-flex">
+                        <div class="me-3">
+                            <i class="fas fa-info-circle fa-2x"></i>
+                        </div>
+                        <div>
+                            <h5 class="alert-heading">Training Information</h5>
+                            <p class="mb-1"><strong>Title:</strong> {{ training.title }}</p>
+                            <p class="mb-1"><strong>Dates:</strong> {{ training.start_date.strftime('%d %B, %Y') }} - {{ training.end_date.strftime('%d %B, %Y') }}</p>
+                            <p class="mb-1"><strong>Current Enrollment:</strong> {{ training.enrolled_count }} 
+                            {% if training.max_participants > 0 %}
+                                / {{ training.max_participants }}
+                                <small class="ms-2">({{ training.max_participants - training.enrolled_count }} spots remaining)</small>
+                            {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <form method="POST" action="{{ url_for('enroll_training', training_id=training.id) }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-4">
+                        <label class="form-label">{{ form.employees.label }}</label>
+                        {{ form.employees(class="form-select select2", multiple="multiple", size="10") }}
+                        <div class="form-text">
+                            Hold Ctrl (or Command on Mac) to select multiple employees
+                        </div>
+                        {% if form.employees.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.employees.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('view_training', training_id=training.id) }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancel
+                        </a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.select2').select2({
+            placeholder: "Select employees to enroll",
+            allowClear: true,
+            width: '100%',
+            // Remove theme-related code
+            theme: 'default'
+        });
+        
+        // Remove theme observer code
+    });
+</script>
+{% endblock %}

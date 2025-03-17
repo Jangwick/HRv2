@@ -1,0 +1,314 @@
+/**
+ * HR System Chatbot Styles
+ * Mobile-friendly, theme-compatible chatbot UI
+ */
+
+/* Chatbot container */
+.hr-chatbot {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 1040;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  transition: all 0.3s ease;
+}
+
+/* Chatbot toggle button */
+.hr-chatbot-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: var(--bs-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: none;
+  font-size: 24px;
+  transition: transform 0.2s ease, background-color 0.3s ease;
+}
+
+.hr-chatbot-btn:hover {
+  transform: scale(1.05);
+  background-color: var(--bs-primary-hover, var(--bs-primary));
+}
+
+/* Show different icons based on state */
+.hr-chatbot-btn .fa-times {
+  display: none;
+}
+
+.hr-chatbot.hr-chatbot-open .hr-chatbot-btn .fa-comment {
+  display: none;
+}
+
+.hr-chatbot.hr-chatbot-open .hr-chatbot-btn .fa-times {
+  display: inline-block;
+}
+
+/* New message indicator */
+.hr-chatbot-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  background-color: var(--bs-danger);
+  border-radius: 50%;
+  display: none;
+}
+
+.hr-chatbot.hr-chatbot-new-message .hr-chatbot-btn::after {
+  display: block;
+}
+
+/* Chatbot window */
+.hr-chatbot-window {
+  width: 350px;
+  height: 500px;
+  background-color: var(--bs-body-bg);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  pointer-events: none;
+  border: 1px solid var(--bs-border-color);
+}
+
+.hr-chatbot.hr-chatbot-open .hr-chatbot-window {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: all;
+}
+
+/* Chatbot header */
+.hr-chatbot-header {
+  background-color: var(--bs-primary);
+  color: white;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.hr-chatbot-avatar {
+  background-color: white;
+  color: var(--bs-primary);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  font-size: 18px;
+}
+
+.hr-chatbot-info {
+  flex-grow: 1;
+}
+
+.hr-chatbot-info h5 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.hr-chatbot-status {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.hr-chatbot-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.hr-chatbot-action {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.hr-chatbot-action:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Chatbot messages area */
+.hr-chatbot-messages {
+  flex-grow: 1;
+  padding: 15px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Message styling */
+.hr-chatbot-message {
+  display: flex;
+  max-width: 85%;
+}
+
+.hr-chatbot-message-user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.hr-chatbot-message-bot {
+  align-self: flex-start;
+}
+
+.hr-chatbot-message-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: white;
+}
+
+.hr-chatbot-message-bot .hr-chatbot-message-avatar {
+  background-color: var(--bs-primary);
+  margin-right: 10px;
+}
+
+.hr-chatbot-message-user .hr-chatbot-message-avatar {
+  background-color: var(--bs-secondary);
+  margin-left: 10px;
+}
+
+.hr-chatbot-message-content {
+  padding: 10px 15px;
+  border-radius: 18px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.hr-chatbot-message-bot .hr-chatbot-message-content {
+  background-color: var(--bs-tertiary-bg);
+  border-top-left-radius: 4px;
+}
+
+.hr-chatbot-message-user .hr-chatbot-message-content {
+  background-color: var(--bs-primary);
+  color: white;
+  border-top-right-radius: 4px;
+}
+
+.hr-chatbot-message-content p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.hr-chatbot-message-content p + p {
+  margin-top: 8px;
+}
+
+.hr-chatbot-message-content ul, 
+.hr-chatbot-message-content ol {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-left: 20px;
+}
+
+/* Loading animation */
+.hr-chatbot-loading-dots {
+  display: flex;
+  gap: 5px;
+}
+
+.hr-chatbot-loading-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--bs-gray-500);
+  animation: loading-dot 1.5s infinite ease-in-out;
+}
+
+.hr-chatbot-loading-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.hr-chatbot-loading-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes loading-dot {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* Input area */
+.hr-chatbot-input {
+  padding: 15px;
+  border-top: 1px solid var(--bs-border-color);
+}
+
+.hr-chatbot-input .form-control {
+  border-radius: 20px;
+  padding-left: 15px;
+}
+
+.hr-chatbot-input .btn {
+  border-radius: 20px;
+}
+
+/* Suggestion chips */
+.hr-chatbot-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.hr-chatbot-suggestion {
+  background-color: var(--bs-tertiary-bg);
+  color: var(--bs-body-color);
+  border: 1px solid var(--bs-border-color);
+  border-radius: 15px;
+  padding: 5px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.hr-chatbot-suggestion:hover {
+  background-color: var(--bs-primary-bg-subtle);
+  border-color: var(--bs-primary);
+}
+
+/* Responsive styling for mobile */
+@media (max-width: 480px) {
+  .hr-chatbot-window {
+    width: 100vw;
+    height: calc(100vh - 100px);
+    position: fixed;
+    right: 0;
+    bottom: 70px;
+    border-radius: 10px 10px 0 0;
+    margin-bottom: 0;
+  }
+  
+  .hr-chatbot.hr-chatbot-open .hr-chatbot-btn {
+    bottom: 10px;
+  }
+}

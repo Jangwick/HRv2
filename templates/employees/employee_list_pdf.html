@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<!--
+  NOTE: This template is used for PDF generation. 
+  We can't use Bootstrap classes here because PDF generation libraries (like WeasyPrint or ReportLab)
+  don't interpret Bootstrap classes - they require explicit CSS styling.
+  
+  When creating PDF templates, use direct CSS properties instead of Bootstrap classes.
+-->
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ report_title }}</title>
+    <style>
+        @page {
+            margin: 1cm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            font-size: 12px;
+        }
+        .header {
+            background-color: #4e73df;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 10px;
+            margin-top: 20px;
+            color: #666;
+        }
+        h1 {
+            margin: 0;
+            padding: 0;
+            font-size: 24px;
+        }
+        h2 {
+            font-size: 18px;
+            color: #4e73df;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .filter-info {
+            background-color: #f2f2f2;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            font-size: 11px;
+        }
+        .role-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            color: white;
+        }
+        .role-employee {
+            background-color: #6c757d;
+        }
+        .role-hr {
+            background-color: #17a2b8;
+        }
+        .role-admin {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{ report_title }}</h1>
+        <p>Generated on {{ now.strftime('%B %d, %Y at %H:%M:%S') }}</p>
+        <p>{{ company_name }}</p>
+    </div>
+    
+    <div class="filter-info">
+        <strong>Filters:</strong>
+        {% if filters.search %}
+            <span>Search: "{{ filters.search }}"</span>
+        {% endif %}
+        {% if filters.department %}
+            <span>Department: {{ filters.department }}</span>
+        {% endif %}
+    </div>
+    
+    <h2>Employee List</h2>
+    <p>Total Employees: {{ employees|length }}</p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Department</th>
+                <th>Position</th>
+                <th>Role</th>
+                <th>Hire Date</th>
+                <th>Phone</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for employee in employees %}
+            <tr>
+                <td>{{ employee.first_name }} {{ employee.last_name }}</td>
+                <td>{{ employee.username }}</td>
+                <td>{{ employee.email }}</td>
+                <td>{{ employee.department }}</td>
+                <td>{{ employee.position }}</td>
+                <td>
+                    <span class="role-badge role-{{ employee.role.lower() }}">
+                        {{ employee.role }}
+                    </span>
+                </td>
+                <td>{{ employee.hire_date }}</td>
+                <td>{{ employee.phone_number }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    <div class="footer">
+        <p>Confidential: This document contains employee information and should be handled according to HR policies.</p>
+        <p>Page 1 of 1</p>
+    </div>
+</body>
+</html>

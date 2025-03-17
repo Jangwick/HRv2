@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Leave Requests{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Only keep minimal custom styles that Bootstrap doesn't provide */
+    .leave-card {
+        transition: transform 0.3s ease;
+    }
+    .leave-card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Back button at top of the page -->
+{% include 'components/back_button.html' %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-calendar-alt me-2"></i>Leave Requests</h2>
+    <a href="{{ url_for('new_leave') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>New Leave Request
+    </a>
+</div>
+
+<!-- Pending Requests Section -->
+<section class="mb-5">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3 class="card-title mb-0">
+                <i class="fas fa-hourglass-half me-2"></i>
+                Pending Requests
+                {% if current_user.is_hr() or current_user.is_admin() %}
+                <span class="badge bg-light text-dark ms-2">{{ pending_requests|length }}</span>
+                {% endif %}
+            </h3>
+        </div>
+        <div class="card-body">
+            {% if pending_requests %}
+                <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+                    {% for leave in pending_requests %}
+                    <div class="col">
+                        <div class="card leave-card h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span class="badge {{ leave.status_badge_color }}">Pending</span>
+                                <span class="text-muted small">{{ leave.created_at.strftime('%Y-%m-%d') }}</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    {% if leave.leave_type == 'vacation' %}
+                                        <i class="fas fa-umbrella-beach fs-1 text-primary mb-2"></i>
+                                    {% elif leave.leave_type == 'sick' %}
+                                        <i class="fas fa-briefcase-medical fs-1 text-danger mb-2"></i>
+                                    {% elif leave.leave_type == 'personal' %}
+                                        <i class="fas fa-user-clock fs-1 text-info mb-2"></i>
+                                    {% elif leave.leave_type == 'bereavement' %}
+                                        <i class="fas fa-heart-broken fs-1 text-secondary mb-2"></i>
+                                    {% elif leave.leave_type == 'maternity' or leave.leave_type == 'paternity' %}
+                                        <i class="fas fa-baby fs-1 text-success mb-2"></i>
+                                    {% else %}
+                                        <i class="fas fa-calendar-minus fs-1 text-warning mb-2"></i>
+                                    {% endif %}
+                                    <h5>{{ leave.leave_type.title() }} Leave</h5>
+                                </div>
+                                
+                                <p class="mb-2">
+                                    <i class="fas fa-calendar-day me-2 text-muted"></i>
+                                    <strong>Duration:</strong> {{ leave.duration_days }} days
+                                </p>
+                                <p class="mb-2">
+                                    <i class="fas fa-calendar-check me-2 text-muted"></i>
+                                    <strong>From:</strong> {{ leave.start_date.strftime('%d %b, %Y') }}
+                                </p>
+                                <p class="mb-2">
+                                    <i class="fas fa-calendar-times me-2 text-muted"></i>
+                                    <strong>To:</strong> {{ leave.end_date.strftime('%d %b, %Y') }}
+                                </p>
+                                
+                                {% if current_user.is_hr() or current_user.is_admin() %}
+                                <p class="mb-2">
+                                    <i class="fas fa-user me-2 text-muted"></i>
+                                    <strong>Employee:</strong> {{ leave.employee.username }}
+                                </p>
+                                {% endif %}
+                                
+                                <div class="d-grid mt-3 gap-2">
+                                    <a href="{{ url_for('view_leave', leave_id=leave.id) }}" class="btn btn-outline-primary">
+                                        View Details
+                                    </a>
+                                    {% if current_user.is_hr() or current_user.is_admin() %}
+                                    <a href="{{ url_for('process_leave', leave_id=leave.id) }}" class="btn btn-primary">
+                                        Process Request
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center my-4">
+                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                    <h4>No pending leave requests</h4>
+                    {% if current_user.is_hr() or current_user.is_admin() %}
+                        <p>All leave requests have been processed.</p>
+                    {% else %}
+                        <p>You don't have any pending leave requests.</p>
+                        <a href="{{ url_for('new_leave') }}" class="btn btn-primary mt-2">
+                            <i class="fas fa-plus me-2"></i>New Leave Request
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Processed Requests Section -->
+<section>
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <h3 class="card-title mb-0">
+                <i class="fas fa-history me-2"></i>
+                Recent Processed Requests
+            </h3>
+        </div>
+        <div class="card-body">
+            {% if processed_requests %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                {% if current_user.is_hr() or current_user.is_admin() %}
+                                <th>Employee</th>
+                                {% endif %}
+                                <th>Duration</th>
+                                <th>Dates</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for leave in processed_requests %}
+                            <tr>
+                                <td>{{ leave.leave_type.title() }}</td>
+                                {% if current_user.is_hr() or current_user.is_admin() %}
+                                <td>{{ leave.employee.username }}</td>
+                                {% endif %}
+                                <td>{{ leave.duration_days }} days</td>
+                                <td>{{ leave.start_date.strftime('%d %b') }} - {{ leave.end_date.strftime('%d %b, %Y') }}</td>
+                                <td>
+                                    <span class="badge {{ leave.status_badge_color }}">
+                                        {{ leave.status.title() }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('view_leave', leave_id=leave.id) }}" class="btn btn-sm btn-outline-primary">
+                                        View
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center my-4">
+                    <i class="fas fa-clipboard-list fa-3x text-secondary mb-3"></i>
+                    <h4>No processed leave requests yet</h4>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Salary - {{ employee.username }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    /* Only keeping minimal custom styles that Bootstrap doesn't provide */
+    .history-item {
+        transition: all 0.3s ease;
+    }
+    .current-salary {
+        font-size: 2rem;
+        font-weight: 700;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('employee_list') }}">Employees</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('employee_detail', employee_id=employee.id) }}">{{ employee.username }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Salary Management</li>
+    </ol>
+</nav>
+
+<!-- Using Bootstrap's bg-primary text-white and border-radius classes -->
+<div class="bg-primary bg-gradient text-white p-4 rounded-3 mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2>Salary Management</h2>
+            <p class="lead mb-0">Employee: {{ employee.get_display_name() }}</p>
+        </div>
+        <div class="text-end">
+            {% if current_salary %}
+                <div class="current-salary">{{ current_salary.formatted_amount }}</div>
+                <span class="badge bg-light text-dark">{{ current_salary.salary_type.title() }}</span>
+            {% else %}
+                <div class="text-warning">No salary information</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Salary Form -->
+    <div class="col-md-5 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h4 class="mb-0"><i class="fas fa-money-bill-alt me-2 text-success"></i>{{ 'Update' if current_salary else 'Add' }} Salary</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('manage_salary', employee_id=employee.id) }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.amount.label }}</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            {{ form.amount(class="form-control") }}
+                        </div>
+                        {% if form.amount.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.amount.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.currency.label }}</label>
+                        {{ form.currency(class="form-select") }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.salary_type.label }}</label>
+                        {{ form.salary_type(class="form-select") }}
+                        <div class="form-text">
+                            Specify whether this is an hourly, monthly or annual salary
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label">{{ form.effective_date.label }}</label>
+                        {{ form.effective_date(class="form-control datepicker") }}
+                        <div class="form-text">
+                            Date from which this salary will be effective
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-success") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Salary History -->
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h4 class="mb-0"><i class="fas fa-history me-2 text-primary"></i>Salary History</h4>
+            </div>
+            <div class="card-body p-0">
+                {% if salary_history %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Effective Date</th>
+                                <th>End Date</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Annual Equivalent</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for salary in salary_history %}
+                            <tr class="history-item {{ 'table-success' if salary.is_active else '' }}">
+                                <td>{{ salary.effective_date.strftime('%Y-%m-%d') }}</td>
+                                <td>{{ salary.end_date.strftime('%Y-%m-%d') if salary.end_date else 'Current' }}</td>
+                                <td>{{ salary.salary_type.title() }}</td>
+                                <td>{{ salary.formatted_amount }}</td>
+                                <td>{{ salary.currency }} {{ "%.2f"|format(salary.annualized_amount) }}</td>
+                                <td>
+                                    {% if salary.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-info-circle fa-3x text-muted mb-3"></i>
+                    <h5>No salary history available</h5>
+                    <p>Use the form to add salary information for this employee</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Calculation Info -->
+        <div class="card mt-4 shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-calculator me-2 text-primary"></i>Salary Calculations</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6>Hourly Salary</h6>
+                        <p class="text-muted">Based on 40-hour work week<br>(2080 hours per year)</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Monthly Salary</h6>
+                        <p class="text-muted">Based on 12 months per year</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Annual Salary</h6>
+                        <p class="text-muted">Total yearly compensation</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a href="{{ url_for('employee_detail', employee_id=employee.id) }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Employee Profile
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+$(document).ready(function() {
+    // Initialize date picker
+    $(".datepicker").flatpickr({
+        dateFormat: "Y-m-d",
+        defaultDate: new Date()
+    });
+});
+</script>
+{% endblock %}

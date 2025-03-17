@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+
+{% block title %}{{ training.title }} - Training Program{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Only keeping minimal transition effects not available in Bootstrap */
+    .detail-card {
+        transition: all 0.3s ease;
+    }
+    .detail-card:hover {
+        transform: translateY(-5px);
+    }
+    .instructor-img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--bs-body-bg);
+    }
+    
+    /* Improved enrollment badge positioning and styling - now inline with title */
+    .enrollment-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        margin-left: 12px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        vertical-align: middle;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    /* Status indicator with more visual distinction */
+    .training-status {
+        margin-top: 2px;
+        padding: 5px 10px;
+        border-radius: 15px;
+        display: inline-block;
+    }
+    
+    /* Better visual hierarchy for status metadata */
+    .training-metadata {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+    }
+    
+    .training-metadata-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        border-radius: 6px;
+        padding: 4px 8px;
+        background-color: var(--bs-tertiary-bg);
+    }
+    
+    /* Responsive adjustments for the title and badge */
+    @media (max-width: 767.98px) {
+        .title-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .enrollment-badge {
+            margin-left: 0;
+            margin-top: 8px;
+            align-self: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('trainings') }}">Training Programs</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ training.title }}</li>
+    </ol>
+</nav>
+
+<!-- Training Header -->
+<div class="bg-primary bg-gradient text-white p-4 rounded-3 mb-4">
+    <div class="d-flex justify-content-between align-items-start mb-3">
+        <!-- Title container with inline badge -->
+        <div class="title-container">
+            <h2 class="mb-0">
+                {{ training.title }}
+                {% if enrollment %}
+                <span class="enrollment-badge bg-success text-white">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Enrolled</span>
+                </span>
+                {% endif %}
+            </h2>
+        </div>
+        <div class="training-metadata">
+            <span class="training-status {{ training.status_badge_color }}">{{ training.status.title() }}</span>
+            <span class="badge bg-secondary">{{ training.category.replace('_', ' ').title() }}</span>
+        </div>
+    </div>
+    
+    <p class="lead mb-0">
+        <i class="fas fa-calendar-alt me-2"></i>
+        {{ training.start_date.strftime('%d %B, %Y') }} - {{ training.end_date.strftime('%d %B, %Y') }}
+        <span class="ms-3"><i class="fas fa-clock me-2"></i>{{ training.duration_days }} days</span>
+    </p>
+</div>
+
+<div class="row mb-4">
+    <!-- Training Details -->
+    <div class="col-md-8">
+        <div class="card detail-card mb-4">
+            <div class="card-header bg-body">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2 text-primary"></i>Training Description</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ training.description }}</p>
+            </div>
+        </div>
+        
+        <div class="card detail-card">
+            <div class="card-header bg-body">
+                <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2 text-primary"></i>Location & Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <h6><i class="fas fa-map-pin me-2 text-body-secondary"></i>Location</h6>
+                        <p>{{ training.location }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h6><i class="fas fa-users me-2 text-body-secondary"></i>Participants</h6>
+                        <p>
+                            {% if training.max_participants == 0 %}
+                                <span class="training-metadata-item">
+                                    <i class="fas fa-infinity"></i>
+                                    <span>{{ training.enrolled_count }} enrolled (unlimited spots)</span>
+                                </span>
+                            {% else %}
+                                <span class="training-metadata-item">
+                                    <i class="fas fa-user-check"></i>
+                                    <span>{{ training.enrolled_count }} / {{ training.max_participants }}</span>
+                                </span>
+                                {% if training.is_full %}
+                                    <span class="badge bg-danger ms-2">Full</span>
+                                {% else %}
+                                    <span class="badge bg-success ms-2">{{ training.max_participants - training.enrolled_count }} spots left</span>
+                                {% endif %}
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <h6><i class="fas fa-user-tie me-2 text-body-secondary"></i>Instructor</h6>
+                    <p>{{ training.instructor }}</p>
+                </div>
+                
+                <div class="mb-3">
+                    <h6><i class="fas fa-calendar-check me-2 text-body-secondary"></i>Status</h6>
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        <span class="badge {{ training.status_badge_color }}">{{ training.status.title() }}</span>
+                        
+                        {% if training.is_upcoming %}
+                            <span class="training-metadata-item">
+                                <i class="fas fa-hourglass-start text-primary"></i>
+                                <span>Starts in {{ (training.start_date - now.date()).days }} days</span>
+                            </span>
+                        {% endif %}
+                        
+                        {% if training.is_in_progress %}
+                            <span class="training-metadata-item">
+                                <i class="fas fa-play-circle text-success"></i>
+                                <span>Currently in progress</span>
+                            </span>
+                        {% endif %}
+                        
+                        {% if training.is_completed %}
+                            <span class="training-metadata-item">
+                                <i class="fas fa-check-circle text-success"></i>
+                                <span>Completed on {{ training.end_date.strftime('%d %B, %Y') }}</span>
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Enrollment & Actions -->
+    <div class="col-md-4">
+        <!-- Enrollment Card -->
+        <div class="card detail-card mb-4">
+            <div class="card-header bg-body">
+                <h5 class="mb-0"><i class="fas fa-user-check me-2 text-primary"></i>Enrollment</h5>
+            </div>
+            <div class="card-body">
+                {% if enrollment %}
+                    <div class="alert alert-success">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fas fa-check-circle fa-lg"></i>
+                            <div>
+                                <strong>You're enrolled!</strong>
+                                <div class="small">Enrolled on {{ enrollment.enrollment_date.strftime('%B %d, %Y') }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if training.status == 'completed' and enrollment.status != 'completed' %}
+                        <div class="alert alert-info">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="fas fa-star fa-lg"></i>
+                                <div>
+                                    <strong>This training is completed.</strong>
+                                    <div class="small">Please provide your feedback.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-grid">
+                            <a href="{{ url_for('training_feedback', training_id=training.id) }}" 
+                               class="btn btn-primary">
+                                <i class="fas fa-star me-2"></i>Submit Feedback
+                            </a>
+                        </div>
+                    {% elif enrollment.status == 'completed' %}
+                        <div class="alert alert-info">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="fas fa-clipboard-check fa-lg"></i>
+                                <div>
+                                    <strong>Thank you for your feedback!</strong>
+                                    <div class="small">Your feedback helps improve our training programs.</div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <form method="POST" action="{{ url_for('unenroll_training', training_id=training.id, employee_id=current_user.id) }}">
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to unenroll from this training?')">
+                                    <i class="fas fa-user-minus me-2"></i>Unenroll
+                                </button>
+                            </div>
+                        </form>
+                    {% endif %}
+                {% else %}
+                    {% if training.status == 'upcoming' or training.status == 'in-progress' %}
+                        {% if not training.is_full %}
+                            <div class="alert alert-info">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="fas fa-info-circle fa-lg"></i>
+                                    <div>
+                                        <strong>Not enrolled yet.</strong>
+                                        <div class="small">Join this training program to develop your skills.</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-grid">
+                                <a href="{{ url_for('enroll_training', training_id=training.id) }}" 
+                                   class="btn btn-primary">
+                                    <i class="fas fa-user-plus me-2"></i>Enroll Now
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="fas fa-exclamation-triangle fa-lg"></i>
+                                    <div>
+                                        <strong>This training is full.</strong>
+                                        <div class="small">No more spots available.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="alert alert-secondary">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="fas fa-info-circle fa-lg"></i>
+                                <div>
+                                    <strong>Enrollment is closed.</strong>
+                                    <div class="small">This training is {{ training.status }}.</div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- HR/Admin Actions -->
+        {% if current_user.is_hr() or current_user.is_admin() %}
+        <div class="card detail-card">
+            <div class="card-header bg-body">
+                <h5 class="mb-0"><i class="fas fa-cogs me-2 text-primary"></i>Admin Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('edit_training', training_id=training.id) }}" class="btn btn-outline-primary">
+                        <i class="fas fa-edit me-2"></i>Edit Training
+                    </a>
+                    <a href="{{ url_for('enroll_training', training_id=training.id) }}" class="btn btn-outline-success">
+                        <i class="fas fa-user-plus me-2"></i>Enroll Employees
+                    </a>
+                </div>
+                
+                {% if enrolled_employees %}
+                <hr>
+                <h6 class="d-flex justify-content-between align-items-center">
+                    <span>Enrolled Employees</span>
+                    <span class="badge bg-primary">{{ enrolled_employees|length }}</span>
+                </h6>
+                <div class="list-group mt-3">
+                    {% for user, enrollment in enrolled_employees %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>{{ user.get_display_name() or user.username }}</span>
+                        <form method="POST" action="{{ url_for('unenroll_training', training_id=training.id, employee_id=user.id) }}" style="display: inline;">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Remove this employee from the training?')">
+                                <i class="fas fa-user-minus"></i>
+                            </button>
+                        </form>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="mt-3">
+    <a href="{{ url_for('trainings') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Training Programs
+    </a>
+</div>
+{% endblock %}

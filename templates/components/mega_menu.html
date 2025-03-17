@@ -1,0 +1,70 @@
+{# 
+  Reusable mega menu component
+  
+  Parameters:
+  - id: Unique ID for this menu
+  - sections: Array of menu sections
+  - featured_items: Optional array of featured items
+  
+  Usage example:
+  {% set menu_sections = [
+    {
+      'title': 'Employee Management',
+      'links': [
+        {'title': 'View All Employees', 'url': url_for('employee_list'), 'icon': 'bi-people'},
+        {'title': 'Add New Employee', 'url': url_for('new_employee'), 'icon': 'bi-person-plus'}
+      ]
+    }
+  ] %}
+  {% set menu_id = 'hrMenu' %}
+  
+  {% include 'components/mega_menu.html' %}
+#}
+
+<div class="mega-menu p-4" id="{{ id }}">
+  <div class="container">
+    <div class="row">
+      {% for section in sections %}
+      <div class="col-md-4 mb-4">
+        <h6 class="text-uppercase fw-bold mb-3">{{ section.title }}</h6>
+        <div class="list-group list-group-flush">
+          {% for link in section.links %}
+          <a href="{{ link.url }}" class="list-group-item list-group-item-action border-0 px-0 py-2">
+            <i class="bi {{ link.icon }} me-2"></i> {{ link.title }}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    
+    {% if featured_items %}
+    <div class="row mt-3">
+      <div class="col-12">
+        <div class="border-top pt-3">
+          <h6 class="mb-3">Quick Access</h6>
+          <div class="d-flex gap-3">
+            {% for item in featured_items %}
+            <div class="card flex-grow-1">
+              <div class="card-body py-2 px-3">
+                <div class="d-flex align-items-center">
+                  <div class="flex-shrink-0">
+                    <div class="rounded-circle bg-{{ item.color }} p-2 text-white">
+                      <i class="bi {{ item.icon }}"></i>
+                    </div>
+                  </div>
+                  <div class="flex-grow-1 ms-3">
+                    <h6 class="card-title mb-0">{{ item.title }}</h6>
+                    <p class="card-text small text-body-secondary mb-0">{{ item.description }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>

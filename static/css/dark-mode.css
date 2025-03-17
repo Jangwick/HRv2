@@ -1,0 +1,95 @@
+/* Dark Mode Styles for HR System */
+
+/* Theme transition effect for smoother theme switching */
+html {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.card, .navbar, .btn, .form-control, .form-select, .modal, .table, .input-group-text,
+.dropdown-menu, .alert, .breadcrumb, .badge {
+    transition: all 0.3s ease;
+}
+
+/* Base dark mode styles that supplement Bootstrap's data-bs-theme="dark" */
+.dark-mode {
+    --hr-bg-gradient: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+    --hr-card-bg: #2d3748;
+    --hr-input-bg: #1e2a38;
+    --hr-border-color: #4a5568;
+    --hr-text-muted: #a0aec0;
+    --hr-hover-bg: #3a4a5e;
+}
+
+/* Custom overrides for dark mode */
+.dark-mode .navbar {
+    background: var(--hr-bg-gradient) !important;
+}
+
+.dark-mode .card {
+    background-color: var(--hr-card-bg);
+    border-color: var(--hr-border-color);
+}
+
+.dark-mode .btn-outline-secondary {
+    border-color: #6c757d;
+    color: #cbd5e0;
+}
+
+.dark-mode .btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: #fff;
+}
+
+/* Dark mode form elements */
+.dark-mode .form-control,
+.dark-mode .form-select {
+    background-color: var(--hr-input-bg);
+    border-color: var(--hr-border-color);
+    color: #e2e8f0;
+}
+
+.dark-mode .input-group-text {
+    background-color: #374151;
+    border-color: var(--hr-border-color);
+    color: #e2e8f0;
+}
+
+.dark-mode .form-text {
+    color: var(--hr-text-muted);
+}
+
+/* Table overrides */
+.dark-mode .table {
+    color: #e2e8f0;
+}
+
+.dark-mode .table-striped > tbody > tr:nth-of-type(odd) > * {
+    color: #e2e8f0;
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark-mode .table-hover > tbody > tr:hover > * {
+    background-color: var(--hr-hover-bg);
+}
+
+/* Adjust card hover effects */
+.dark-mode .card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5);
+}
+
+/* Section headers and page headers */
+.dark-mode .report-header,
+.dark-mode .profile-header,
+.dark-mode .training-header,
+.dark-mode .salary-header,
+.dark-mode .welcome-section {
+    background: var(--hr-bg-gradient);
+}
+
+.dark-mode .search-header {
+    background-color: #2d3748;
+}

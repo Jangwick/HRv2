@@ -1,0 +1,70 @@
+{# 
+  HR System Chatbot Component
+  
+  This component provides a floating chatbot interface powered by Google Gemini.
+  
+  Usage: 
+  {% include 'components/chatbot.html' %}
+#}
+
+<div class="hr-chatbot" id="hrChatbot">
+  <!-- Chatbot Button -->
+  <button class="hr-chatbot-btn" id="chatbotToggle" aria-label="Open HR Assistant">
+    <i class="fas fa-comment"></i>
+    <i class="fas fa-times"></i>
+  </button>
+  
+  <!-- Chatbot Window -->
+  <div class="hr-chatbot-window">
+    <!-- Chatbot Header -->
+    <div class="hr-chatbot-header">
+      <div class="hr-chatbot-avatar">
+        <i class="fas fa-robot"></i>
+      </div>
+      <div class="hr-chatbot-info">
+        <h5>HR Assistant</h5>
+        <span class="hr-chatbot-status">Online</span>
+      </div>
+      <div class="hr-chatbot-actions">
+        <button class="hr-chatbot-action" id="chatbotReset" aria-label="Reset conversation">
+          <i class="fas fa-redo-alt"></i>
+        </button>
+        <button class="hr-chatbot-action" id="chatbotClose" aria-label="Close chatbot">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Chatbot Messages -->
+    <div class="hr-chatbot-messages" id="chatbotMessages">
+      <!-- Welcome message -->
+      <div class="hr-chatbot-message hr-chatbot-message-bot">
+        <div class="hr-chatbot-message-avatar">
+          <i class="fas fa-robot"></i>
+        </div>
+        <div class="hr-chatbot-message-content">
+          <p>Hello {{ current_user.username }}! I'm your HR Assistant. How can I help you today?</p>
+        </div>
+      </div>
+      
+      <!-- Messages will be added here dynamically -->
+    </div>
+    
+    <!-- Chatbot Input -->
+    <div class="hr-chatbot-input">
+      <form id="chatbotForm">
+        <div class="input-group">
+          <input type="text" class="form-control" id="chatbotInput" placeholder="Type your question..." aria-label="Message">
+          <button class="btn btn-primary" type="submit" id="chatbotSend">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </form>
+      <div class="hr-chatbot-suggestions">
+        <button class="hr-chatbot-suggestion" data-message="Tell me about leave policies">Leave policies</button>
+        <button class="hr-chatbot-suggestion" data-message="Show my leave balance">My leave balance</button>
+        <button class="hr-chatbot-suggestion" data-message="My upcoming trainings">My trainings</button>
+      </div>
+    </div>
+  </div>
+</div>
